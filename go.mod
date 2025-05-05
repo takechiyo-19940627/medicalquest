@@ -1,6 +1,6 @@
 module github.com/medicalquest
 
-go 1.21
+go 1.23
 
 require (
 	entgo.io/ent v0.12.5
