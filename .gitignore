@@ -7,6 +7,8 @@
 *.dll
 *.so
 *.dylib
+main
+tmp/
 
 # Test binary, built with `go test -c`
 *.test
@@ -15,11 +17,31 @@
 *.out
 
 # Dependency directories (remove the comment below to include it)
-# vendor/
+vendor/
 
 # Go workspace file
 go.work
 go.work.sum
 
-# env file
+# Air temporary files
+.air.toml
+tmp/
+
+# IDE files
+.idea/
+.vscode/
+
+# Database files
+*.db
+
+# Environment variables
 .env
+.env.local
+
+# Log files
+*.log
+
+# Output files
+*.csv
+
+**/.claude/settings.local.json

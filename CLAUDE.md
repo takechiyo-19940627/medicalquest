@@ -3,10 +3,12 @@
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## Build & Test Commands
-- Build: TBD (to be determined as project develops)
-- Lint: TBD
-- Test: TBD
-- Single test: TBD
+- Build: `docker-compose up -d --build`
+- Lint: `go vet ./...` and `golangci-lint run ./...`
+- Test: `go test -v ./...`
+- Single test: `go test -v ./path/to/package -run TestName`
+- Generate Ent code: `./scripts/generate-ent.sh`
+- Run migrations: `make migrate-dev`
 
 ## Code Style Guidelines
 - Language: Japanese for comments, English for code
