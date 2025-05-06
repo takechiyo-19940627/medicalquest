@@ -6,8 +6,8 @@ import (
     "entgo.io/ent/dialect"
     "entgo.io/ent/dialect/sql"
     
-    "github.com/medicalquest/internal/config"
-    "github.com/medicalquest/internal/ent"
+    "github.com/takechiyo-19940627/medicalquest/internal/config"
+    "github.com/takechiyo-19940627/medicalquest/internal/ent"
 )
 
 // NewClient creates a new ent client for interacting with the database

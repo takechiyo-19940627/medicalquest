@@ -6,8 +6,8 @@ import (
     
     "github.com/labstack/echo/v4"
     
-    "github.com/medicalquest/internal/ent"
-    "github.com/medicalquest/internal/ent/choice"
+    "github.com/takechiyo-19940627/medicalquest/internal/ent"
+    "github.com/takechiyo-19940627/medicalquest/internal/ent/choice"
 )
 
 // ChoiceHandler handles HTTP requests related to choices

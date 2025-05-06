@@ -14,9 +14,9 @@ import (
     "github.com/labstack/echo/v4/middleware"
     _ "github.com/lib/pq"
     
-    "github.com/medicalquest/internal/config"
-    "github.com/medicalquest/internal/handlers"
-    "github.com/medicalquest/pkg/database"
+    "github.com/takechiyo-19940627/medicalquest/internal/config"
+    "github.com/takechiyo-19940627/medicalquest/internal/handlers"
+    "github.com/takechiyo-19940627/medicalquest/pkg/database"
 )
 
 func main() {

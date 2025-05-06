@@ -1,6 +1,6 @@
-module github.com/medicalquest
+module github.com/takechiyo-19940627/medicalquest
 
-go 1.23
+go 1.23.0
 
 require (
 	entgo.io/ent v0.12.5
