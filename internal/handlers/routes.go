@@ -3,7 +3,7 @@ package handlers
 import (
     "github.com/labstack/echo/v4"
     
-    "github.com/medicalquest/internal/ent"
+    "github.com/takechiyo-19940627/medicalquest/internal/ent"
 )
 
 // RegisterRoutes sets up all routes for the application

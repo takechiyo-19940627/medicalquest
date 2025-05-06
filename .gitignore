@@ -45,3 +45,7 @@ tmp/
 *.csv
 
 **/.claude/settings.local.json
+
+internal/ent/*
+!internal/ent/schema/
+!internal/ent/schema/*
