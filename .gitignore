@@ -24,7 +24,6 @@ go.work
 go.work.sum
 
 # Air temporary files
-.air.toml
 tmp/
 
 # IDE files
