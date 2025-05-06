@@ -49,3 +49,5 @@ internal/ent/*
 !internal/ent/generate.go
 !internal/ent/schema/
 !internal/ent/schema/*
+
+migrations/atlas.sum
