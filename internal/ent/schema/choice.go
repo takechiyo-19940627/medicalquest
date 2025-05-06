@@ -1,6 +1,8 @@
 package schema
 
 import (
+    "time"
+
     "entgo.io/ent"
     "entgo.io/ent/schema/edge"
     "entgo.io/ent/schema/field"
@@ -22,6 +24,9 @@ func (Choice) Fields() []ent.Field {
             Comment("選択肢の内容"),
         field.Bool("is_correct").
             Default(false),
+        field.Time("created_at").
+            Default(time.Now).
+            Immutable(),
     }
 }
 
