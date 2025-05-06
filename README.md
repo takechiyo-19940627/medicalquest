@@ -84,7 +84,7 @@ make migrate-dev
 │   ├── repositories/    # データアクセス層
 │   ├── services/        # ビジネスロジック
 │   └── ent/             # Ent ORM 生成コード
-├── pkg/                 # 公開パッケージ
+├── infra/                 # インフラ接続など
 │   ├── database/        # データベース接続
 │   └── logger/          # ロギング
 ├── migrations/          # データベースマイグレーション
