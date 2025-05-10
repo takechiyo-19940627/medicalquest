@@ -4,12 +4,17 @@
 
 ## 技術スタック
 
-- Go言語
+- Go言語 (v1.23)
 - Echo (Webフレームワーク)
 - Ent (ORM)
 - PostgreSQL (データベース)
 - Atlas (データベースマイグレーション)
 - Docker (開発環境)
+
+## プロジェクト概要
+
+MedicalQuestは医療知識に関する問題を出題し、回答するためのアプリケーションです。
+RESTful APIとCLIの両方のインターフェースを提供し、問題の出題・回答・結果の保存などの機能を備えています。
 
 ## 開発環境のセットアップ
 
@@ -23,7 +28,7 @@
 1. リポジトリをクローン
 
 ```bash
-git clone https://github.com/yourusername/medicalquest.git
+git clone https://github.com/takechiyo-19940627/medicalquest.git
 cd medicalquest
 ```
 
@@ -36,11 +41,12 @@ make up
 これにより、以下のコンテナが起動します：
 - API サーバー: localhost:8080
 - PostgreSQL: localhost:5432
+- CLI: インタラクティブモードで実行
 
 3. マイグレーションを実行（初回のみ）
 
 ```bash
-make migrate-dev
+make migrate-apply
 ```
 
 ## 開発コマンド
@@ -56,19 +62,19 @@ make down
 make build
 
 # テストの実行
-make test
+go test -v ./...
 
 # リントチェック
-make lint
+go vet ./...
+golangci-lint run ./...
 
-# ローカルでの実行（コンテナ外）
-make run
+# Ent コード生成
+./scripts/generate-ent.sh
 
-# コード生成（Ent スキーマ変更後）
-make generate
-
-# マイグレーション（開発環境）
-make migrate-dev
+# マイグレーション関連
+make migrate-apply  # マイグレーション適用
+make migrate-status # マイグレーション状態確認
+make migrate-diff MIGRATION_NAME=name  # 差分マイグレーション作成
 ```
 
 ## ディレクトリ構造
@@ -76,19 +82,20 @@ make migrate-dev
 ```
 .
 ├── cmd/                 # アプリケーションのエントリーポイント
-│   └── api/             # API サーバー
-├── internal/            # 内部パッケージ
-│   ├── config/          # 設定
-│   ├── handlers/        # HTTPハンドラー
-│   ├── models/          # データモデル
-│   ├── repositories/    # データアクセス層
-│   ├── services/        # ビジネスロジック
-│   └── ent/             # Ent ORM 生成コード
-├── pkg/                 # 公開パッケージ
+│   ├── api/             # API サーバー
+│   └── cli/             # CLIアプリケーション
+├── config/              # 設定
+├── domain/              # ドメイン層
+│   ├── entity/          # エンティティ
+│   └── repository/      # リポジトリインターフェース
+├── handler/             # HTTPハンドラー
+├── infrastructure/      # インフラストラクチャ層
 │   ├── database/        # データベース接続
-│   └── logger/          # ロギング
+│   ├── ent/             # Ent ORM 生成コード
+│   └── persistence/     # リポジトリ実装
 ├── migrations/          # データベースマイグレーション
-└── docker-compose.yml   # Docker 設定
+├── pkg/                 # 公開パッケージ
+└── service/             # サービス層
 ```
 
 ## APIエンドポイント
@@ -109,3 +116,22 @@ API サーバーは以下のエンドポイントを提供します：
 - `POST /api/questions/:questionID/choices` - 選択肢を作成
 - `PUT /api/choices/:id` - 選択肢を更新
 - `DELETE /api/choices/:id` - 選択肢を削除
+
+## CLIアプリケーション
+
+CLI アプリケーションは以下の機能を提供します：
+
+- 問題の出題
+- 回答の受付
+- 結果の表示
+- 結果のCSVファイル出力
+
+実行方法:
+
+```bash
+# Docker内で実行
+docker-compose run cli
+
+# ローカルで実行
+go run cmd/cli/main.go
+```
