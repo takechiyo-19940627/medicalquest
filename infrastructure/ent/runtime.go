@@ -16,16 +16,20 @@ import (
 func init() {
 	choiceFields := schema.Choice{}.Fields()
 	_ = choiceFields
+	// choiceDescUID is the schema descriptor for uid field.
+	choiceDescUID := choiceFields[1].Descriptor()
+	// choice.UIDValidator is a validator for the "uid" field. It is called by the builders before save.
+	choice.UIDValidator = choiceDescUID.Validators[0].(func(string) error)
 	// choiceDescContent is the schema descriptor for content field.
-	choiceDescContent := choiceFields[1].Descriptor()
+	choiceDescContent := choiceFields[2].Descriptor()
 	// choice.ContentValidator is a validator for the "content" field. It is called by the builders before save.
 	choice.ContentValidator = choiceDescContent.Validators[0].(func(string) error)
 	// choiceDescIsCorrect is the schema descriptor for is_correct field.
-	choiceDescIsCorrect := choiceFields[2].Descriptor()
+	choiceDescIsCorrect := choiceFields[3].Descriptor()
 	// choice.DefaultIsCorrect holds the default value on creation for the is_correct field.
 	choice.DefaultIsCorrect = choiceDescIsCorrect.Default.(bool)
 	// choiceDescCreatedAt is the schema descriptor for created_at field.
-	choiceDescCreatedAt := choiceFields[3].Descriptor()
+	choiceDescCreatedAt := choiceFields[4].Descriptor()
 	// choice.DefaultCreatedAt holds the default value on creation for the created_at field.
 	choice.DefaultCreatedAt = choiceDescCreatedAt.Default.(func() time.Time)
 	// choiceDescID is the schema descriptor for id field.
@@ -34,16 +38,20 @@ func init() {
 	choice.IDValidator = choiceDescID.Validators[0].(func(int) error)
 	questionFields := schema.Question{}.Fields()
 	_ = questionFields
+	// questionDescUID is the schema descriptor for uid field.
+	questionDescUID := questionFields[1].Descriptor()
+	// question.UIDValidator is a validator for the "uid" field. It is called by the builders before save.
+	question.UIDValidator = questionDescUID.Validators[0].(func(string) error)
 	// questionDescTitle is the schema descriptor for title field.
-	questionDescTitle := questionFields[2].Descriptor()
+	questionDescTitle := questionFields[3].Descriptor()
 	// question.TitleValidator is a validator for the "title" field. It is called by the builders before save.
 	question.TitleValidator = questionDescTitle.Validators[0].(func(string) error)
 	// questionDescContent is the schema descriptor for content field.
-	questionDescContent := questionFields[3].Descriptor()
+	questionDescContent := questionFields[4].Descriptor()
 	// question.ContentValidator is a validator for the "content" field. It is called by the builders before save.
 	question.ContentValidator = questionDescContent.Validators[0].(func(string) error)
 	// questionDescCreatedAt is the schema descriptor for created_at field.
-	questionDescCreatedAt := questionFields[4].Descriptor()
+	questionDescCreatedAt := questionFields[5].Descriptor()
 	// question.DefaultCreatedAt holds the default value on creation for the created_at field.
 	question.DefaultCreatedAt = questionDescCreatedAt.Default.(func() time.Time)
 	// questionDescID is the schema descriptor for id field.

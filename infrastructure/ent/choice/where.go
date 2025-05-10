@@ -55,6 +55,11 @@ func IDLTE(id int) predicate.Choice {
 	return predicate.Choice(sql.FieldLTE(FieldID, id))
 }
 
+// UID applies equality check predicate on the "uid" field. It's identical to UIDEQ.
+func UID(v string) predicate.Choice {
+	return predicate.Choice(sql.FieldEQ(FieldUID, v))
+}
+
 // Content applies equality check predicate on the "content" field. It's identical to ContentEQ.
 func Content(v string) predicate.Choice {
 	return predicate.Choice(sql.FieldEQ(FieldContent, v))
@@ -68,6 +73,71 @@ func IsCorrect(v bool) predicate.Choice {
 // CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
 func CreatedAt(v time.Time) predicate.Choice {
 	return predicate.Choice(sql.FieldEQ(FieldCreatedAt, v))
+}
+
+// UIDEQ applies the EQ predicate on the "uid" field.
+func UIDEQ(v string) predicate.Choice {
+	return predicate.Choice(sql.FieldEQ(FieldUID, v))
+}
+
+// UIDNEQ applies the NEQ predicate on the "uid" field.
+func UIDNEQ(v string) predicate.Choice {
+	return predicate.Choice(sql.FieldNEQ(FieldUID, v))
+}
+
+// UIDIn applies the In predicate on the "uid" field.
+func UIDIn(vs ...string) predicate.Choice {
+	return predicate.Choice(sql.FieldIn(FieldUID, vs...))
+}
+
+// UIDNotIn applies the NotIn predicate on the "uid" field.
+func UIDNotIn(vs ...string) predicate.Choice {
+	return predicate.Choice(sql.FieldNotIn(FieldUID, vs...))
+}
+
+// UIDGT applies the GT predicate on the "uid" field.
+func UIDGT(v string) predicate.Choice {
+	return predicate.Choice(sql.FieldGT(FieldUID, v))
+}
+
+// UIDGTE applies the GTE predicate on the "uid" field.
+func UIDGTE(v string) predicate.Choice {
+	return predicate.Choice(sql.FieldGTE(FieldUID, v))
+}
+
+// UIDLT applies the LT predicate on the "uid" field.
+func UIDLT(v string) predicate.Choice {
+	return predicate.Choice(sql.FieldLT(FieldUID, v))
+}
+
+// UIDLTE applies the LTE predicate on the "uid" field.
+func UIDLTE(v string) predicate.Choice {
+	return predicate.Choice(sql.FieldLTE(FieldUID, v))
+}
+
+// UIDContains applies the Contains predicate on the "uid" field.
+func UIDContains(v string) predicate.Choice {
+	return predicate.Choice(sql.FieldContains(FieldUID, v))
+}
+
+// UIDHasPrefix applies the HasPrefix predicate on the "uid" field.
+func UIDHasPrefix(v string) predicate.Choice {
+	return predicate.Choice(sql.FieldHasPrefix(FieldUID, v))
+}
+
+// UIDHasSuffix applies the HasSuffix predicate on the "uid" field.
+func UIDHasSuffix(v string) predicate.Choice {
+	return predicate.Choice(sql.FieldHasSuffix(FieldUID, v))
+}
+
+// UIDEqualFold applies the EqualFold predicate on the "uid" field.
+func UIDEqualFold(v string) predicate.Choice {
+	return predicate.Choice(sql.FieldEqualFold(FieldUID, v))
+}
+
+// UIDContainsFold applies the ContainsFold predicate on the "uid" field.
+func UIDContainsFold(v string) predicate.Choice {
+	return predicate.Choice(sql.FieldContainsFold(FieldUID, v))
 }
 
 // ContentEQ applies the EQ predicate on the "content" field.

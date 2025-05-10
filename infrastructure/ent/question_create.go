@@ -21,6 +21,12 @@ type QuestionCreate struct {
 	hooks    []Hook
 }
 
+// SetUID sets the "uid" field.
+func (qc *QuestionCreate) SetUID(s string) *QuestionCreate {
+	qc.mutation.SetUID(s)
+	return qc
+}
+
 // SetReferenceCode sets the "reference_code" field.
 func (qc *QuestionCreate) SetReferenceCode(s string) *QuestionCreate {
 	qc.mutation.SetReferenceCode(s)
@@ -125,6 +131,14 @@ func (qc *QuestionCreate) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (qc *QuestionCreate) check() error {
+	if _, ok := qc.mutation.UID(); !ok {
+		return &ValidationError{Name: "uid", err: errors.New(`ent: missing required field "Question.uid"`)}
+	}
+	if v, ok := qc.mutation.UID(); ok {
+		if err := question.UIDValidator(v); err != nil {
+			return &ValidationError{Name: "uid", err: fmt.Errorf(`ent: validator failed for field "Question.uid": %w`, err)}
+		}
+	}
 	if _, ok := qc.mutation.Title(); !ok {
 		return &ValidationError{Name: "title", err: errors.New(`ent: missing required field "Question.title"`)}
 	}
@@ -180,6 +194,10 @@ func (qc *QuestionCreate) createSpec() (*Question, *sqlgraph.CreateSpec) {
 	if id, ok := qc.mutation.ID(); ok {
 		_node.ID = id
 		_spec.ID.Value = id
+	}
+	if value, ok := qc.mutation.UID(); ok {
+		_spec.SetField(question.FieldUID, field.TypeString, value)
+		_node.UID = value
 	}
 	if value, ok := qc.mutation.ReferenceCode(); ok {
 		_spec.SetField(question.FieldReferenceCode, field.TypeString, value)

@@ -35,6 +35,7 @@ type ChoiceMutation struct {
 	op              Op
 	typ             string
 	id              *int
+	uid             *string
 	content         *string
 	is_correct      *bool
 	created_at      *time.Time
@@ -148,6 +149,42 @@ func (m *ChoiceMutation) IDs(ctx context.Context) ([]int, error) {
 	default:
 		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
 	}
+}
+
+// SetUID sets the "uid" field.
+func (m *ChoiceMutation) SetUID(s string) {
+	m.uid = &s
+}
+
+// UID returns the value of the "uid" field in the mutation.
+func (m *ChoiceMutation) UID() (r string, exists bool) {
+	v := m.uid
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUID returns the old "uid" field's value of the Choice entity.
+// If the Choice object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ChoiceMutation) OldUID(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUID: %w", err)
+	}
+	return oldValue.UID, nil
+}
+
+// ResetUID resets all changes to the "uid" field.
+func (m *ChoiceMutation) ResetUID() {
+	m.uid = nil
 }
 
 // SetContent sets the "content" field.
@@ -331,7 +368,10 @@ func (m *ChoiceMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *ChoiceMutation) Fields() []string {
-	fields := make([]string, 0, 3)
+	fields := make([]string, 0, 4)
+	if m.uid != nil {
+		fields = append(fields, choice.FieldUID)
+	}
 	if m.content != nil {
 		fields = append(fields, choice.FieldContent)
 	}
@@ -349,6 +389,8 @@ func (m *ChoiceMutation) Fields() []string {
 // schema.
 func (m *ChoiceMutation) Field(name string) (ent.Value, bool) {
 	switch name {
+	case choice.FieldUID:
+		return m.UID()
 	case choice.FieldContent:
 		return m.Content()
 	case choice.FieldIsCorrect:
@@ -364,6 +406,8 @@ func (m *ChoiceMutation) Field(name string) (ent.Value, bool) {
 // database failed.
 func (m *ChoiceMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
 	switch name {
+	case choice.FieldUID:
+		return m.OldUID(ctx)
 	case choice.FieldContent:
 		return m.OldContent(ctx)
 	case choice.FieldIsCorrect:
@@ -379,6 +423,13 @@ func (m *ChoiceMutation) OldField(ctx context.Context, name string) (ent.Value, 
 // type.
 func (m *ChoiceMutation) SetField(name string, value ent.Value) error {
 	switch name {
+	case choice.FieldUID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUID(v)
+		return nil
 	case choice.FieldContent:
 		v, ok := value.(string)
 		if !ok {
@@ -449,6 +500,9 @@ func (m *ChoiceMutation) ClearField(name string) error {
 // It returns an error if the field is not defined in the schema.
 func (m *ChoiceMutation) ResetField(name string) error {
 	switch name {
+	case choice.FieldUID:
+		m.ResetUID()
+		return nil
 	case choice.FieldContent:
 		m.ResetContent()
 		return nil
@@ -542,6 +596,7 @@ type QuestionMutation struct {
 	op             Op
 	typ            string
 	id             *int
+	uid            *string
 	reference_code *string
 	title          *string
 	content        *string
@@ -657,6 +712,42 @@ func (m *QuestionMutation) IDs(ctx context.Context) ([]int, error) {
 	default:
 		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
 	}
+}
+
+// SetUID sets the "uid" field.
+func (m *QuestionMutation) SetUID(s string) {
+	m.uid = &s
+}
+
+// UID returns the value of the "uid" field in the mutation.
+func (m *QuestionMutation) UID() (r string, exists bool) {
+	v := m.uid
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUID returns the old "uid" field's value of the Question entity.
+// If the Question object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *QuestionMutation) OldUID(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUID: %w", err)
+	}
+	return oldValue.UID, nil
+}
+
+// ResetUID resets all changes to the "uid" field.
+func (m *QuestionMutation) ResetUID() {
+	m.uid = nil
 }
 
 // SetReferenceCode sets the "reference_code" field.
@@ -904,7 +995,10 @@ func (m *QuestionMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *QuestionMutation) Fields() []string {
-	fields := make([]string, 0, 4)
+	fields := make([]string, 0, 5)
+	if m.uid != nil {
+		fields = append(fields, question.FieldUID)
+	}
 	if m.reference_code != nil {
 		fields = append(fields, question.FieldReferenceCode)
 	}
@@ -925,6 +1019,8 @@ func (m *QuestionMutation) Fields() []string {
 // schema.
 func (m *QuestionMutation) Field(name string) (ent.Value, bool) {
 	switch name {
+	case question.FieldUID:
+		return m.UID()
 	case question.FieldReferenceCode:
 		return m.ReferenceCode()
 	case question.FieldTitle:
@@ -942,6 +1038,8 @@ func (m *QuestionMutation) Field(name string) (ent.Value, bool) {
 // database failed.
 func (m *QuestionMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
 	switch name {
+	case question.FieldUID:
+		return m.OldUID(ctx)
 	case question.FieldReferenceCode:
 		return m.OldReferenceCode(ctx)
 	case question.FieldTitle:
@@ -959,6 +1057,13 @@ func (m *QuestionMutation) OldField(ctx context.Context, name string) (ent.Value
 // type.
 func (m *QuestionMutation) SetField(name string, value ent.Value) error {
 	switch name {
+	case question.FieldUID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUID(v)
+		return nil
 	case question.FieldReferenceCode:
 		v, ok := value.(string)
 		if !ok {
@@ -1045,6 +1150,9 @@ func (m *QuestionMutation) ClearField(name string) error {
 // It returns an error if the field is not defined in the schema.
 func (m *QuestionMutation) ResetField(name string) error {
 	switch name {
+	case question.FieldUID:
+		m.ResetUID()
+		return nil
 	case question.FieldReferenceCode:
 		m.ResetReferenceCode()
 		return nil

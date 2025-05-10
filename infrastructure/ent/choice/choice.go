@@ -14,6 +14,8 @@ const (
 	Label = "choice"
 	// FieldID holds the string denoting the id field in the database.
 	FieldID = "id"
+	// FieldUID holds the string denoting the uid field in the database.
+	FieldUID = "uid"
 	// FieldContent holds the string denoting the content field in the database.
 	FieldContent = "content"
 	// FieldIsCorrect holds the string denoting the is_correct field in the database.
@@ -36,6 +38,7 @@ const (
 // Columns holds all SQL columns for choice fields.
 var Columns = []string{
 	FieldID,
+	FieldUID,
 	FieldContent,
 	FieldIsCorrect,
 	FieldCreatedAt,
@@ -63,6 +66,8 @@ func ValidColumn(column string) bool {
 }
 
 var (
+	// UIDValidator is a validator for the "uid" field. It is called by the builders before save.
+	UIDValidator func(string) error
 	// ContentValidator is a validator for the "content" field. It is called by the builders before save.
 	ContentValidator func(string) error
 	// DefaultIsCorrect holds the default value on creation for the "is_correct" field.
@@ -79,6 +84,11 @@ type OrderOption func(*sql.Selector)
 // ByID orders the results by the id field.
 func ByID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldID, opts...).ToFunc()
+}
+
+// ByUID orders the results by the uid field.
+func ByUID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldUID, opts...).ToFunc()
 }
 
 // ByContent orders the results by the content field.

@@ -21,6 +21,12 @@ type ChoiceCreate struct {
 	hooks    []Hook
 }
 
+// SetUID sets the "uid" field.
+func (cc *ChoiceCreate) SetUID(s string) *ChoiceCreate {
+	cc.mutation.SetUID(s)
+	return cc
+}
+
 // SetContent sets the "content" field.
 func (cc *ChoiceCreate) SetContent(s string) *ChoiceCreate {
 	cc.mutation.SetContent(s)
@@ -119,6 +125,14 @@ func (cc *ChoiceCreate) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (cc *ChoiceCreate) check() error {
+	if _, ok := cc.mutation.UID(); !ok {
+		return &ValidationError{Name: "uid", err: errors.New(`ent: missing required field "Choice.uid"`)}
+	}
+	if v, ok := cc.mutation.UID(); ok {
+		if err := choice.UIDValidator(v); err != nil {
+			return &ValidationError{Name: "uid", err: fmt.Errorf(`ent: validator failed for field "Choice.uid": %w`, err)}
+		}
+	}
 	if _, ok := cc.mutation.Content(); !ok {
 		return &ValidationError{Name: "content", err: errors.New(`ent: missing required field "Choice.content"`)}
 	}
@@ -172,6 +186,10 @@ func (cc *ChoiceCreate) createSpec() (*Choice, *sqlgraph.CreateSpec) {
 	if id, ok := cc.mutation.ID(); ok {
 		_node.ID = id
 		_spec.ID.Value = id
+	}
+	if value, ok := cc.mutation.UID(); ok {
+		_spec.SetField(choice.FieldUID, field.TypeString, value)
+		_node.UID = value
 	}
 	if value, ok := cc.mutation.Content(); ok {
 		_spec.SetField(choice.FieldContent, field.TypeString, value)
