@@ -17,6 +17,8 @@ type Question struct {
 	config `json:"-"`
 	// ID of the ent.
 	ID int `json:"id,omitempty"`
+	// UID holds the value of the "uid" field.
+	UID string `json:"uid,omitempty"`
 	// ReferenceCode holds the value of the "reference_code" field.
 	ReferenceCode *string `json:"reference_code,omitempty"`
 	// Title holds the value of the "title" field.
@@ -56,7 +58,7 @@ func (*Question) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case question.FieldID:
 			values[i] = new(sql.NullInt64)
-		case question.FieldReferenceCode, question.FieldTitle, question.FieldContent:
+		case question.FieldUID, question.FieldReferenceCode, question.FieldTitle, question.FieldContent:
 			values[i] = new(sql.NullString)
 		case question.FieldCreatedAt:
 			values[i] = new(sql.NullTime)
@@ -81,6 +83,12 @@ func (q *Question) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field id", value)
 			}
 			q.ID = int(value.Int64)
+		case question.FieldUID:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field uid", values[i])
+			} else if value.Valid {
+				q.UID = value.String
+			}
 		case question.FieldReferenceCode:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field reference_code", values[i])
@@ -147,6 +155,9 @@ func (q *Question) String() string {
 	var builder strings.Builder
 	builder.WriteString("Question(")
 	builder.WriteString(fmt.Sprintf("id=%v, ", q.ID))
+	builder.WriteString("uid=")
+	builder.WriteString(q.UID)
+	builder.WriteString(", ")
 	if v := q.ReferenceCode; v != nil {
 		builder.WriteString("reference_code=")
 		builder.WriteString(*v)

@@ -7,10 +7,19 @@ type Question struct {
 	Content       string
 }
 
-func NewQuestion(ReferenceCode, title, content string) Question {
+func NewQuestion(referenceCode, title, content string) Question {
 	return Question{
-		UID:           NewUID(),
-		ReferenceCode: ReferenceCode,
+		UID:           GenerateUID(),
+		ReferenceCode: referenceCode,
+		Title:         title,
+		Content:       content,
+	}
+}
+
+func NewQuestionFromPersistence(uid, referenceCode, title, content string) Question {
+	return Question{
+		UID:           ToUID(uid),
+		ReferenceCode: referenceCode,
 		Title:         title,
 		Content:       content,
 	}

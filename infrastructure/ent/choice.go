@@ -18,6 +18,8 @@ type Choice struct {
 	config `json:"-"`
 	// ID of the ent.
 	ID int `json:"id,omitempty"`
+	// UID holds the value of the "uid" field.
+	UID string `json:"uid,omitempty"`
 	// 選択肢の内容
 	Content string `json:"content,omitempty"`
 	// IsCorrect holds the value of the "is_correct" field.
@@ -60,7 +62,7 @@ func (*Choice) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullBool)
 		case choice.FieldID:
 			values[i] = new(sql.NullInt64)
-		case choice.FieldContent:
+		case choice.FieldUID, choice.FieldContent:
 			values[i] = new(sql.NullString)
 		case choice.FieldCreatedAt:
 			values[i] = new(sql.NullTime)
@@ -87,6 +89,12 @@ func (c *Choice) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field id", value)
 			}
 			c.ID = int(value.Int64)
+		case choice.FieldUID:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field uid", values[i])
+			} else if value.Valid {
+				c.UID = value.String
+			}
 		case choice.FieldContent:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field content", values[i])
@@ -153,6 +161,9 @@ func (c *Choice) String() string {
 	var builder strings.Builder
 	builder.WriteString("Choice(")
 	builder.WriteString(fmt.Sprintf("id=%v, ", c.ID))
+	builder.WriteString("uid=")
+	builder.WriteString(c.UID)
+	builder.WriteString(", ")
 	builder.WriteString("content=")
 	builder.WriteString(c.Content)
 	builder.WriteString(", ")

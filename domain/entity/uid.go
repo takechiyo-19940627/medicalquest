@@ -6,7 +6,7 @@ type UID struct {
 	value string
 }
 
-func NewUID() UID {
+func GenerateUID() UID {
 	// TODO: ドメインがID生成の詳細を知っている状態なので抽出したい
 	uuid := uuid.New()
 	return UID{
@@ -20,4 +20,10 @@ func (u UID) String() string {
 
 func (u UID) IsEqual(target UID) bool {
 	return u.value == target.value
+}
+
+func ToUID(uid string) UID {
+	return UID{
+		value: uid,
+	}
 }

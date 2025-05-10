@@ -55,6 +55,11 @@ func IDLTE(id int) predicate.Question {
 	return predicate.Question(sql.FieldLTE(FieldID, id))
 }
 
+// UID applies equality check predicate on the "uid" field. It's identical to UIDEQ.
+func UID(v string) predicate.Question {
+	return predicate.Question(sql.FieldEQ(FieldUID, v))
+}
+
 // ReferenceCode applies equality check predicate on the "reference_code" field. It's identical to ReferenceCodeEQ.
 func ReferenceCode(v string) predicate.Question {
 	return predicate.Question(sql.FieldEQ(FieldReferenceCode, v))
@@ -73,6 +78,71 @@ func Content(v string) predicate.Question {
 // CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
 func CreatedAt(v time.Time) predicate.Question {
 	return predicate.Question(sql.FieldEQ(FieldCreatedAt, v))
+}
+
+// UIDEQ applies the EQ predicate on the "uid" field.
+func UIDEQ(v string) predicate.Question {
+	return predicate.Question(sql.FieldEQ(FieldUID, v))
+}
+
+// UIDNEQ applies the NEQ predicate on the "uid" field.
+func UIDNEQ(v string) predicate.Question {
+	return predicate.Question(sql.FieldNEQ(FieldUID, v))
+}
+
+// UIDIn applies the In predicate on the "uid" field.
+func UIDIn(vs ...string) predicate.Question {
+	return predicate.Question(sql.FieldIn(FieldUID, vs...))
+}
+
+// UIDNotIn applies the NotIn predicate on the "uid" field.
+func UIDNotIn(vs ...string) predicate.Question {
+	return predicate.Question(sql.FieldNotIn(FieldUID, vs...))
+}
+
+// UIDGT applies the GT predicate on the "uid" field.
+func UIDGT(v string) predicate.Question {
+	return predicate.Question(sql.FieldGT(FieldUID, v))
+}
+
+// UIDGTE applies the GTE predicate on the "uid" field.
+func UIDGTE(v string) predicate.Question {
+	return predicate.Question(sql.FieldGTE(FieldUID, v))
+}
+
+// UIDLT applies the LT predicate on the "uid" field.
+func UIDLT(v string) predicate.Question {
+	return predicate.Question(sql.FieldLT(FieldUID, v))
+}
+
+// UIDLTE applies the LTE predicate on the "uid" field.
+func UIDLTE(v string) predicate.Question {
+	return predicate.Question(sql.FieldLTE(FieldUID, v))
+}
+
+// UIDContains applies the Contains predicate on the "uid" field.
+func UIDContains(v string) predicate.Question {
+	return predicate.Question(sql.FieldContains(FieldUID, v))
+}
+
+// UIDHasPrefix applies the HasPrefix predicate on the "uid" field.
+func UIDHasPrefix(v string) predicate.Question {
+	return predicate.Question(sql.FieldHasPrefix(FieldUID, v))
+}
+
+// UIDHasSuffix applies the HasSuffix predicate on the "uid" field.
+func UIDHasSuffix(v string) predicate.Question {
+	return predicate.Question(sql.FieldHasSuffix(FieldUID, v))
+}
+
+// UIDEqualFold applies the EqualFold predicate on the "uid" field.
+func UIDEqualFold(v string) predicate.Question {
+	return predicate.Question(sql.FieldEqualFold(FieldUID, v))
+}
+
+// UIDContainsFold applies the ContainsFold predicate on the "uid" field.
+func UIDContainsFold(v string) predicate.Question {
+	return predicate.Question(sql.FieldContainsFold(FieldUID, v))
 }
 
 // ReferenceCodeEQ applies the EQ predicate on the "reference_code" field.
