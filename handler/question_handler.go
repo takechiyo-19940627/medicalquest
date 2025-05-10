@@ -5,18 +5,18 @@ import (
 
 	"github.com/labstack/echo/v4"
 
-	"github.com/takechiyo-19940627/medicalquest/infrastructure/ent"
+	"github.com/takechiyo-19940627/medicalquest/service"
 )
 
 // QuestionHandler handles HTTP requests related to questions
 type QuestionHandler struct {
-	client *ent.Client
+	service *service.QuestionService
 }
 
 // NewQuestionHandler creates a new QuestionHandler
-func NewQuestionHandler(client *ent.Client) *QuestionHandler {
+func NewQuestionHandler(service *service.QuestionService) *QuestionHandler {
 	return &QuestionHandler{
-		client: client,
+		service,
 	}
 }
 

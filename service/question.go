@@ -18,3 +18,7 @@ func NewQuestionService(questionRepository repository.QuestionRepository) *Quest
 func (s *QuestionService) FindAll() []entity.Question {
 	return []entity.Question{}
 }
+
+func (s *QuestionService) Create() error {
+	return nil
+}

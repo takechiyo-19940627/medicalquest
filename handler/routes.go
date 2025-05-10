@@ -4,6 +4,8 @@ import (
 	"github.com/labstack/echo/v4"
 
 	"github.com/takechiyo-19940627/medicalquest/infrastructure/ent"
+	"github.com/takechiyo-19940627/medicalquest/infrastructure/persistence"
+	"github.com/takechiyo-19940627/medicalquest/service"
 )
 
 // RegisterRoutes sets up all routes for the application
@@ -15,9 +17,11 @@ func RegisterRoutes(e *echo.Echo, client *ent.Client) {
 
 	// API routes group
 	api := e.Group("/api")
+	repository := persistence.NewQuestionRepository(client)
+	questionService := service.NewQuestionService(repository)
 
 	// Questions routes
-	qh := NewQuestionHandler(client)
+	qh := NewQuestionHandler(questionService)
 	api.GET("/questions", qh.GetAll)
 	api.GET("/questions/:id", qh.GetByID)
 	api.POST("/questions", qh.Create)
