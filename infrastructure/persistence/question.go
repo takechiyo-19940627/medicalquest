@@ -45,3 +45,15 @@ func (q QuestionRepository) FindAll(ctx context.Context) ([]entity.Question, err
 func (q QuestionRepository) FindByID(ctx context.Context, id string) (entity.Question, error) {
 	return entity.Question{}, nil
 }
+
+func (q QuestionRepository) Save(ctx context.Context, uid entity.UID, referenceCode, title, content string) error {
+	_, err := q.db.Question.
+		Create().
+		SetUID(uid.String()).
+		SetReferenceCode(referenceCode).
+		SetTitle(title).
+		SetContent(content).
+		Save(ctx)
+
+	return err
+}

@@ -9,4 +9,5 @@ import (
 type QuestionRepository interface {
 	FindAll(ctx context.Context) ([]entity.Question, error)
 	FindByID(ctx context.Context, id string) (entity.Question, error)
+	Save(ctx context.Context, id entity.UID, referenceCode, title, content string) error
 }
