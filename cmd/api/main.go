@@ -10,12 +10,14 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/go-playground/validator"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	_ "github.com/lib/pq"
 
 	"github.com/takechiyo-19940627/medicalquest/config"
 	handlers "github.com/takechiyo-19940627/medicalquest/handler"
+	"github.com/takechiyo-19940627/medicalquest/handler/validation"
 	"github.com/takechiyo-19940627/medicalquest/infrastructure/database"
 )
 
@@ -37,6 +39,8 @@ func main() {
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 	e.Use(middleware.CORS())
+
+	e.Validator = validation.NewCustomValidator(validator.New())
 
 	// Register routes
 	handlers.RegisterRoutes(e, client)
