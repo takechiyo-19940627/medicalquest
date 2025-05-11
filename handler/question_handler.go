@@ -5,6 +5,7 @@ import (
 
 	"github.com/labstack/echo/v4"
 
+	"github.com/takechiyo-19940627/medicalquest/handler/request"
 	"github.com/takechiyo-19940627/medicalquest/service"
 )
 
@@ -32,7 +33,15 @@ func (h *QuestionHandler) GetByID(c echo.Context) error {
 
 // Create creates a new question
 func (h *QuestionHandler) Create(c echo.Context) error {
-	return c.JSON(http.StatusCreated, "")
+	q := new(request.CreateQuestionRequest)
+	if err := c.Bind(q); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+
+	if err := c.Validate(q); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+	return c.JSON(http.StatusCreated, "Created")
 }
 
 // Update updates an existing question
