@@ -26,7 +26,7 @@ func (h *ChoiceHandler) GetByQuestionID(c echo.Context) error {
 
 // Create creates a new choice for a question
 func (h *ChoiceHandler) Create(c echo.Context) error {
-	return c.JSON(http.StatusCreated, "")
+	return c.JSON(http.StatusCreated, "Created")
 }
 
 // Update updates an existing choice

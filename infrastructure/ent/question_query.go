@@ -299,12 +299,12 @@ func (qq *QuestionQuery) WithChoices(opts ...func(*ChoiceQuery)) *QuestionQuery 
 // Example:
 //
 //	var v []struct {
-//		ReferenceCode string `json:"reference_code,omitempty"`
+//		UID string `json:"uid,omitempty"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
 //	client.Question.Query().
-//		GroupBy(question.FieldReferenceCode).
+//		GroupBy(question.FieldUID).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (qq *QuestionQuery) GroupBy(field string, fields ...string) *QuestionGroupBy {
@@ -322,11 +322,11 @@ func (qq *QuestionQuery) GroupBy(field string, fields ...string) *QuestionGroupB
 // Example:
 //
 //	var v []struct {
-//		ReferenceCode string `json:"reference_code,omitempty"`
+//		UID string `json:"uid,omitempty"`
 //	}
 //
 //	client.Question.Query().
-//		Select(question.FieldReferenceCode).
+//		Select(question.FieldUID).
 //		Scan(ctx, &v)
 func (qq *QuestionQuery) Select(fields ...string) *QuestionSelect {
 	qq.ctx.Fields = append(qq.ctx.Fields, fields...)

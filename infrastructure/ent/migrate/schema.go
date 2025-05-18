@@ -11,6 +11,7 @@ var (
 	// ChoicesColumns holds the columns for the "choices" table.
 	ChoicesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "uid", Type: field.TypeString, Unique: true},
 		{Name: "content", Type: field.TypeString},
 		{Name: "is_correct", Type: field.TypeBool, Default: false},
 		{Name: "created_at", Type: field.TypeTime},
@@ -24,7 +25,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "choices_questions_choices",
-				Columns:    []*schema.Column{ChoicesColumns[4]},
+				Columns:    []*schema.Column{ChoicesColumns[5]},
 				RefColumns: []*schema.Column{QuestionsColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
@@ -33,6 +34,7 @@ var (
 	// QuestionsColumns holds the columns for the "questions" table.
 	QuestionsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "uid", Type: field.TypeString, Unique: true},
 		{Name: "reference_code", Type: field.TypeString, Nullable: true},
 		{Name: "title", Type: field.TypeString},
 		{Name: "content", Type: field.TypeString, Size: 2147483647},

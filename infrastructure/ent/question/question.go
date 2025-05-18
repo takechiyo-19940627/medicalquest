@@ -14,6 +14,8 @@ const (
 	Label = "question"
 	// FieldID holds the string denoting the id field in the database.
 	FieldID = "id"
+	// FieldUID holds the string denoting the uid field in the database.
+	FieldUID = "uid"
 	// FieldReferenceCode holds the string denoting the reference_code field in the database.
 	FieldReferenceCode = "reference_code"
 	// FieldTitle holds the string denoting the title field in the database.
@@ -38,6 +40,7 @@ const (
 // Columns holds all SQL columns for question fields.
 var Columns = []string{
 	FieldID,
+	FieldUID,
 	FieldReferenceCode,
 	FieldTitle,
 	FieldContent,
@@ -55,6 +58,8 @@ func ValidColumn(column string) bool {
 }
 
 var (
+	// UIDValidator is a validator for the "uid" field. It is called by the builders before save.
+	UIDValidator func(string) error
 	// TitleValidator is a validator for the "title" field. It is called by the builders before save.
 	TitleValidator func(string) error
 	// ContentValidator is a validator for the "content" field. It is called by the builders before save.
@@ -71,6 +76,11 @@ type OrderOption func(*sql.Selector)
 // ByID orders the results by the id field.
 func ByID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldID, opts...).ToFunc()
+}
+
+// ByUID orders the results by the uid field.
+func ByUID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldUID, opts...).ToFunc()
 }
 
 // ByReferenceCode orders the results by the reference_code field.
