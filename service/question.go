@@ -1,6 +1,8 @@
 package service
 
 import (
+	"context"
+
 	"github.com/takechiyo-19940627/medicalquest/domain/entity"
 	"github.com/takechiyo-19940627/medicalquest/domain/repository"
 )
@@ -15,8 +17,8 @@ func NewQuestionService(questionRepository repository.QuestionRepository) *Quest
 	}
 }
 
-func (s *QuestionService) FindAll() []entity.Question {
-	return []entity.Question{}
+func (s *QuestionService) FindAll(ctx context.Context) ([]entity.Question, error) {
+	return s.questionRepository.FindAll(ctx)
 }
 
 func (s *QuestionService) Create() error {

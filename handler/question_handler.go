@@ -23,7 +23,12 @@ func NewQuestionHandler(service *service.QuestionService) *QuestionHandler {
 
 // GetAll returns all questions
 func (h *QuestionHandler) GetAll(c echo.Context) error {
-	return c.JSON(http.StatusOK, "")
+	res, err := h.service.FindAll(c.Request().Context())
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+
+	return c.JSON(http.StatusOK, res)
 }
 
 // GetByID returns a question by ID
