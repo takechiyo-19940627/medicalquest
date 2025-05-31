@@ -23,6 +23,8 @@ func (Choice) Fields() []ent.Field {
 			NotEmpty().
 			Immutable().
 			Unique(),
+		field.Int("question_id").
+			Positive(),
 		field.String("content").
 			NotEmpty().
 			Comment("選択肢の内容"),
@@ -40,6 +42,7 @@ func (Choice) Edges() []ent.Edge {
 		edge.From("question", Question.Type).
 			Ref("choices").
 			Unique().
-			Required(),
+			Required().
+			Field("question_id"),
 	}
 }
