@@ -1,6 +1,8 @@
 package response
 
-import "github.com/takechiyo-19940627/medicalquest/domain/entity"
+import (
+	result "github.com/takechiyo-19940627/medicalquest/service/dto"
+)
 
 type QuestionsResponse struct {
 	Data []QuestionItem `json:"data"`
@@ -13,7 +15,7 @@ type QuestionItem struct {
 	Content       string `json:"content"`
 }
 
-func NewQuestionResponse(questions []entity.Question) QuestionsResponse {
+func NewQuestionResponse(questions []result.QuestionResult) QuestionsResponse {
 	if len(questions) == 0 {
 		return QuestionsResponse{}
 	}
@@ -22,7 +24,7 @@ func NewQuestionResponse(questions []entity.Question) QuestionsResponse {
 
 	for _, q := range questions {
 		item := QuestionItem{
-			UID:           q.UID.String(),
+			UID:           q.UID,
 			ReferenceCode: q.ReferenceCode,
 			Title:         q.Title,
 			Content:       q.Content,
