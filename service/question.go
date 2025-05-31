@@ -24,9 +24,9 @@ func (s *QuestionService) FindAll(ctx context.Context) ([]dto.QuestionResult, er
 		return nil, err
 	}
 
-	results := make([]result.QuestionResult, len(qs))
+	results := make([]dto.QuestionResult, len(qs))
 	for i, q := range qs {
-		results[i] = result.QuestionResult{
+		results[i] = dto.QuestionResult{
 			UID:           q.UID.String(),
 			ReferenceCode: q.ReferenceCode,
 			Title:         q.Title,
