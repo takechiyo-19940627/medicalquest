@@ -93,8 +93,19 @@ func TestQuestionRepository_FindAll(t *testing.T) {
 
 			// テストデータの準備と保存
 			for _, data := range tt.setupData {
-				question := entity.NewQuestion(data.refCode, data.title, data.content)
-				err := repo.Save(ctx, question.UID, question.ReferenceCode, question.Title, question.Content)
+				// テスト対象のリポジトリを使わず、直接Entクライアントでテストデータを作成
+				uid := entity.GenerateUID()
+				refCode := &data.refCode
+				if data.refCode == "" {
+					refCode = nil
+				}
+				_, err := client.Question.
+					Create().
+					SetUID(uid.String()).
+					SetNillableReferenceCode(refCode).
+					SetTitle(data.title).
+					SetContent(data.content).
+					Save(ctx)
 				assert.NoError(t, err)
 			}
 
