@@ -37,8 +37,22 @@ func (s *QuestionService) FindAll(ctx context.Context) ([]dto.QuestionResult, er
 	return results, nil
 }
 
-func (s *QuestionService) FindByID(ctx context.Context, id string) (entity.Question, error) {
-	return s.questionRepository.FindByID(ctx, entity.ToUID(id))
+func (s *QuestionService) FindByID(ctx context.Context, id string) (dto.QuestionWithChoicesResult, error) {
+	q, err := s.questionRepository.FindByID(ctx, entity.ToUID(id))
+	if err != nil {
+		return dto.QuestionWithChoicesResult{}, err
+	}
+
+	results := dto.QuestionWithChoicesResult{
+		QuestionResult: dto.QuestionResult{
+			UID:           q.UID.String(),
+			ReferenceCode: q.ReferenceCode,
+			Title:         q.Title,
+			Content:       q.Content,
+		},
+	}
+
+	return results, nil
 }
 
 func (s *QuestionService) Create() error {
