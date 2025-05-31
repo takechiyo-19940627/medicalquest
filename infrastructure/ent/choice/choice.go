@@ -16,6 +16,8 @@ const (
 	FieldID = "id"
 	// FieldUID holds the string denoting the uid field in the database.
 	FieldUID = "uid"
+	// FieldQuestionID holds the string denoting the question_id field in the database.
+	FieldQuestionID = "question_id"
 	// FieldContent holds the string denoting the content field in the database.
 	FieldContent = "content"
 	// FieldIsCorrect holds the string denoting the is_correct field in the database.
@@ -32,22 +34,17 @@ const (
 	// It exists in this package in order to avoid circular dependency with the "question" package.
 	QuestionInverseTable = "questions"
 	// QuestionColumn is the table column denoting the question relation/edge.
-	QuestionColumn = "question_choices"
+	QuestionColumn = "question_id"
 )
 
 // Columns holds all SQL columns for choice fields.
 var Columns = []string{
 	FieldID,
 	FieldUID,
+	FieldQuestionID,
 	FieldContent,
 	FieldIsCorrect,
 	FieldCreatedAt,
-}
-
-// ForeignKeys holds the SQL foreign-keys that are owned by the "choices"
-// table and are not defined as standalone fields in the schema.
-var ForeignKeys = []string{
-	"question_choices",
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -57,17 +54,14 @@ func ValidColumn(column string) bool {
 			return true
 		}
 	}
-	for i := range ForeignKeys {
-		if column == ForeignKeys[i] {
-			return true
-		}
-	}
 	return false
 }
 
 var (
 	// UIDValidator is a validator for the "uid" field. It is called by the builders before save.
 	UIDValidator func(string) error
+	// QuestionIDValidator is a validator for the "question_id" field. It is called by the builders before save.
+	QuestionIDValidator func(int) error
 	// ContentValidator is a validator for the "content" field. It is called by the builders before save.
 	ContentValidator func(string) error
 	// DefaultIsCorrect holds the default value on creation for the "is_correct" field.
@@ -89,6 +83,11 @@ func ByID(opts ...sql.OrderTermOption) OrderOption {
 // ByUID orders the results by the uid field.
 func ByUID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldUID, opts...).ToFunc()
+}
+
+// ByQuestionID orders the results by the question_id field.
+func ByQuestionID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldQuestionID, opts...).ToFunc()
 }
 
 // ByContent orders the results by the content field.

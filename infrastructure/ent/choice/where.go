@@ -60,6 +60,11 @@ func UID(v string) predicate.Choice {
 	return predicate.Choice(sql.FieldEQ(FieldUID, v))
 }
 
+// QuestionID applies equality check predicate on the "question_id" field. It's identical to QuestionIDEQ.
+func QuestionID(v int) predicate.Choice {
+	return predicate.Choice(sql.FieldEQ(FieldQuestionID, v))
+}
+
 // Content applies equality check predicate on the "content" field. It's identical to ContentEQ.
 func Content(v string) predicate.Choice {
 	return predicate.Choice(sql.FieldEQ(FieldContent, v))
@@ -138,6 +143,26 @@ func UIDEqualFold(v string) predicate.Choice {
 // UIDContainsFold applies the ContainsFold predicate on the "uid" field.
 func UIDContainsFold(v string) predicate.Choice {
 	return predicate.Choice(sql.FieldContainsFold(FieldUID, v))
+}
+
+// QuestionIDEQ applies the EQ predicate on the "question_id" field.
+func QuestionIDEQ(v int) predicate.Choice {
+	return predicate.Choice(sql.FieldEQ(FieldQuestionID, v))
+}
+
+// QuestionIDNEQ applies the NEQ predicate on the "question_id" field.
+func QuestionIDNEQ(v int) predicate.Choice {
+	return predicate.Choice(sql.FieldNEQ(FieldQuestionID, v))
+}
+
+// QuestionIDIn applies the In predicate on the "question_id" field.
+func QuestionIDIn(vs ...int) predicate.Choice {
+	return predicate.Choice(sql.FieldIn(FieldQuestionID, vs...))
+}
+
+// QuestionIDNotIn applies the NotIn predicate on the "question_id" field.
+func QuestionIDNotIn(vs ...int) predicate.Choice {
+	return predicate.Choice(sql.FieldNotIn(FieldQuestionID, vs...))
 }
 
 // ContentEQ applies the EQ predicate on the "content" field.
