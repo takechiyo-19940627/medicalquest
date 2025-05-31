@@ -35,7 +35,17 @@ func (h *QuestionHandler) GetAll(c echo.Context) error {
 
 // GetByID returns a question by ID
 func (h *QuestionHandler) GetByID(c echo.Context) error {
-	return c.JSON(http.StatusOK, "")
+	id := c.Param("id")
+	if id == "" {
+		return echo.NewHTTPError(http.StatusBadRequest, "id is required")
+	}
+
+	result, err := h.service.FindByID(c.Request().Context(), id)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+	response := response.NewQuestionWithChoicesResponse(result)
+	return c.JSON(http.StatusOK, response)
 }
 
 // Create creates a new question
