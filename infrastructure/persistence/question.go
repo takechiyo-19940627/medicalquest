@@ -3,9 +3,11 @@ package persistence
 import (
 	"context"
 
+	"github.com/samber/lo"
 	"github.com/takechiyo-19940627/medicalquest/domain/entity"
 	"github.com/takechiyo-19940627/medicalquest/domain/repository"
 	"github.com/takechiyo-19940627/medicalquest/infrastructure/ent"
+	"github.com/takechiyo-19940627/medicalquest/infrastructure/ent/question"
 )
 
 type QuestionRepository struct {
@@ -30,20 +32,46 @@ func (q QuestionRepository) FindAll(ctx context.Context) ([]entity.Question, err
 			rc = *q.ReferenceCode
 		}
 
-		m := entity.NewQuestionFromPersistence(
-			q.UID,
-			rc,
-			q.Title,
-			q.Content,
-		)
+		m := entity.Question{
+			UID:           entity.ToUID(q.UID),
+			ReferenceCode: rc,
+			Title:         q.Title,
+			Content:       q.Content,
+			Choices:       []entity.Choice{},
+		}
 		questions = append(questions, m)
 	}
 
 	return questions, nil
 }
 
-func (q QuestionRepository) FindByID(ctx context.Context, id string) (entity.Question, error) {
-	return entity.Question{}, nil
+func (q QuestionRepository) FindByID(ctx context.Context, id entity.UID) (entity.Question, error) {
+	qs, err := q.db.Question.
+		Query().
+		Where(question.UID(id.String())).
+		WithChoices().
+		First(ctx)
+	if err != nil {
+		return entity.Question{}, err
+	}
+
+	choices := make([]entity.Choice, len(qs.Edges.Choices))
+	for i, c := range qs.Edges.Choices {
+		choices[i] = entity.Choice{
+			UID:         entity.ToUID(c.UID),
+			QuestionUID: entity.ToUID(qs.UID),
+			Content:     c.Content,
+			IsCorrect:   c.IsCorrect,
+		}
+	}
+
+	return entity.Question{
+		UID:           entity.ToUID(qs.UID),
+		ReferenceCode: lo.FromPtr(qs.ReferenceCode),
+		Title:         qs.Title,
+		Content:       qs.Content,
+		Choices:       choices,
+	}, nil
 }
 
 func (q QuestionRepository) Save(ctx context.Context, uid entity.UID, referenceCode, title, content string) error {
