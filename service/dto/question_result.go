@@ -1,4 +1,4 @@
-package result
+package dto
 
 type QuestionResult struct {
 	UID           string

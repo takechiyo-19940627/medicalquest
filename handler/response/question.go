@@ -1,7 +1,7 @@
 package response
 
 import (
-	result "github.com/takechiyo-19940627/medicalquest/service/dto"
+	"github.com/takechiyo-19940627/medicalquest/service/dto"
 )
 
 type QuestionsResponse struct {
@@ -15,7 +15,7 @@ type QuestionItem struct {
 	Content       string `json:"content"`
 }
 
-func NewQuestionResponse(questions []result.QuestionResult) QuestionsResponse {
+func NewQuestionResponse(questions []dto.QuestionResult) QuestionsResponse {
 	if len(questions) == 0 {
 		return QuestionsResponse{}
 	}

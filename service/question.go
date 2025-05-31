@@ -5,7 +5,7 @@ import (
 
 	"github.com/takechiyo-19940627/medicalquest/domain/entity"
 	"github.com/takechiyo-19940627/medicalquest/domain/repository"
-	result "github.com/takechiyo-19940627/medicalquest/service/dto"
+	"github.com/takechiyo-19940627/medicalquest/service/dto"
 )
 
 type QuestionService struct {
@@ -18,7 +18,7 @@ func NewQuestionService(questionRepository repository.QuestionRepository) *Quest
 	}
 }
 
-func (s *QuestionService) FindAll(ctx context.Context) ([]result.QuestionResult, error) {
+func (s *QuestionService) FindAll(ctx context.Context) ([]dto.QuestionResult, error) {
 	qs, err := s.questionRepository.FindAll(ctx)
 	if err != nil {
 		return nil, err
