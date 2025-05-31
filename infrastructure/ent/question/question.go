@@ -34,7 +34,7 @@ const (
 	// It exists in this package in order to avoid circular dependency with the "choice" package.
 	ChoicesInverseTable = "choices"
 	// ChoicesColumn is the table column denoting the choices relation/edge.
-	ChoicesColumn = "question_choices"
+	ChoicesColumn = "question_id"
 )
 
 // Columns holds all SQL columns for question fields.

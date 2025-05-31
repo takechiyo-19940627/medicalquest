@@ -15,7 +15,7 @@ var (
 		{Name: "content", Type: field.TypeString},
 		{Name: "is_correct", Type: field.TypeBool, Default: false},
 		{Name: "created_at", Type: field.TypeTime},
-		{Name: "question_choices", Type: field.TypeInt},
+		{Name: "question_id", Type: field.TypeInt},
 	}
 	// ChoicesTable holds the schema information for the "choices" table.
 	ChoicesTable = &schema.Table{
