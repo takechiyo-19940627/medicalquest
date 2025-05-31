@@ -6,6 +6,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/takechiyo-19940627/medicalquest/domain/entity"
+	"github.com/takechiyo-19940627/medicalquest/infrastructure/ent"
 	"github.com/takechiyo-19940627/medicalquest/infrastructure/ent/enttest"
 	"github.com/takechiyo-19940627/medicalquest/infrastructure/ent/question"
 
@@ -14,13 +15,13 @@ import (
 
 func TestQuestionRepository_FindAll(t *testing.T) {
 	tests := []struct {
-		name          string
-		setupData     []struct {
+		name      string
+		setupData []struct {
 			refCode string
 			title   string
 			content string
 		}
-		expectedCount int
+		expectedCount     int
 		expectedQuestions []struct {
 			refCode string
 			title   string
@@ -48,8 +49,8 @@ func TestQuestionRepository_FindAll(t *testing.T) {
 			},
 		},
 		{
-			name:          "データが存在しない場合",
-			setupData:     []struct {
+			name: "データが存在しない場合",
+			setupData: []struct {
 				refCode string
 				title   string
 				content string
@@ -133,7 +134,93 @@ func TestQuestionRepository_FindAll(t *testing.T) {
 
 func TestQuestionRepository_FindByID(t *testing.T) {
 	// 現状、FindByIDは実装されていないため、スキップ
-	t.Skip("FindByID method is not implemented yet")
+	tests := []struct {
+		name        string
+		setupData   func(t *testing.T, client *ent.Client) entity.UID
+		targetUID   func(uid entity.UID) entity.UID
+		expectError bool
+		assert      func(t *testing.T, targetUID entity.UID, q entity.Question, err error)
+	}{
+		{
+			name: "正常な問題を取得",
+			setupData: func(t *testing.T, client *ent.Client) entity.UID {
+				uid := entity.GenerateUID()
+				createTestQuestion(t, client, uid, "REF001", "質問1", "質問1の内容")
+				createTestChoice(t, client, entity.GenerateUID(), uid, "選択肢1", true)
+				createTestChoice(t, client, entity.GenerateUID(), uid, "選択肢2", false)
+				return uid
+			},
+			targetUID: func(uid entity.UID) entity.UID {
+				return uid
+			},
+			expectError: false,
+			assert: func(t *testing.T, targetUID entity.UID, q entity.Question, err error) {
+				assert.NoError(t, err)
+				assert.Equal(t, q.UID, targetUID)
+				assert.Equal(t, q.Title, "質問1")
+				assert.Equal(t, q.Content, "質問1の内容")
+				assert.Equal(t, len(q.Choices), 2)
+				assert.Equal(t, q.Choices[0].Content, "選択肢1")
+				assert.Equal(t, q.Choices[0].IsCorrect, true)
+				assert.Equal(t, q.Choices[1].Content, "選択肢2")
+				assert.Equal(t, q.Choices[1].IsCorrect, false)
+			},
+		},
+		{
+			name: "選択肢なしの問題を取得するケース",
+			setupData: func(t *testing.T, client *ent.Client) entity.UID {
+				uid := entity.GenerateUID()
+				createTestQuestion(t, client, uid, "REF001", "質問1", "質問1の内容")
+				return uid
+			},
+			targetUID: func(uid entity.UID) entity.UID {
+				return uid
+			},
+			expectError: false,
+			assert: func(t *testing.T, targetUID entity.UID, q entity.Question, err error) {
+				assert.NoError(t, err)
+				assert.Equal(t, q.UID, targetUID)
+				assert.Equal(t, q.Title, "質問1")
+				assert.Equal(t, q.Content, "質問1の内容")
+				assert.Equal(t, len(q.Choices), 0)
+			},
+		},
+		{
+			name: "問題が存在しないケース",
+			setupData: func(t *testing.T, client *ent.Client) entity.UID {
+				uid := entity.GenerateUID()
+				createTestQuestion(t, client, uid, "REF001", "質問1", "質問1の内容")
+				createTestChoice(t, client, entity.GenerateUID(), uid, "選択肢1", true)
+				createTestChoice(t, client, entity.GenerateUID(), uid, "選択肢2", false)
+				return uid
+			},
+			targetUID: func(uid entity.UID) entity.UID {
+				return entity.GenerateUID()
+			},
+			expectError: true,
+			assert: func(t *testing.T, targetUID entity.UID, q entity.Question, err error) {
+				assert.Error(t, err)
+				assert.Contains(t, err.Error(), "not found")
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// enttest を使用してインメモリSQLiteのテストクライアントを作成
+			client := enttest.Open(t, "sqlite3", "file:ent?mode=memory&cache=shared&_fk=1")
+			defer client.Close()
+
+			repo := NewQuestionRepository(client)
+			ctx := context.Background()
+
+			setupUID := tt.setupData(t, client)
+			targetUID := tt.targetUID(setupUID)
+
+			q, err := repo.FindByID(ctx, targetUID)
+			tt.assert(t, targetUID, q, err)
+		})
+	}
 }
 
 func TestQuestionRepository_Save(t *testing.T) {
@@ -220,4 +307,38 @@ func TestQuestionRepository_Save(t *testing.T) {
 			assert.Equal(t, tt.content, savedQuestion.Content)
 		})
 	}
+}
+
+func createTestQuestion(t *testing.T, client *ent.Client, uid entity.UID, refCode string, title string, content string) *ent.Question {
+	ctx := context.Background()
+	var q *ent.Question
+	var err error
+
+	q, err = client.Question.
+		Create().
+		SetUID(uid.String()).
+		SetTitle(title).
+		SetContent(content).
+		Save(ctx)
+	assert.NoError(t, err)
+	return q
+}
+
+func createTestChoice(t *testing.T, client *ent.Client, uid entity.UID, questionUID entity.UID, content string, isCorrect bool) *ent.Choice {
+	ctx := context.Background()
+	var c *ent.Choice
+	var err error
+
+	question, err := client.Question.Query().Where(question.UID(questionUID.String())).First(ctx)
+	assert.NoError(t, err)
+
+	c, err = client.Choice.
+		Create().
+		SetUID(uid.String()).
+		SetQuestionID(question.ID).
+		SetContent(content).
+		SetIsCorrect(isCorrect).
+		Save(ctx)
+	assert.NoError(t, err)
+	return c
 }
