@@ -6,6 +6,7 @@ import (
 	"github.com/labstack/echo/v4"
 
 	"github.com/takechiyo-19940627/medicalquest/handler/request"
+	"github.com/takechiyo-19940627/medicalquest/handler/response"
 	"github.com/takechiyo-19940627/medicalquest/service"
 )
 
@@ -27,13 +28,24 @@ func (h *QuestionHandler) GetAll(c echo.Context) error {
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
+	response := response.NewQuestionResponse(res)
 
-	return c.JSON(http.StatusOK, res)
+	return c.JSON(http.StatusOK, response)
 }
 
 // GetByID returns a question by ID
 func (h *QuestionHandler) GetByID(c echo.Context) error {
-	return c.JSON(http.StatusOK, "")
+	id := c.Param("id")
+	if id == "" {
+		return echo.NewHTTPError(http.StatusBadRequest, "id is required")
+	}
+
+	result, err := h.service.FindByID(c.Request().Context(), id)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+	response := response.NewQuestionWithChoicesResponse(result)
+	return c.JSON(http.StatusOK, response)
 }
 
 // Create creates a new question
