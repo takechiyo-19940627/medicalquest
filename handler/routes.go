@@ -26,6 +26,7 @@ func RegisterRoutes(e *echo.Echo, client *ent.Client) {
 	api.GET("/questions/:id", qh.GetByID)
 	api.POST("/questions", qh.Create)
 	api.PUT("/questions/:id", qh.Update)
+	api.POST("questions/:id/submit", qh.Submit)
 	api.DELETE("/questions/:id", qh.Delete)
 
 	// Choices routes
