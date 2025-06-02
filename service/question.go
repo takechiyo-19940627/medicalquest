@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"errors"
 
 	"github.com/takechiyo-19940627/medicalquest/domain/entity"
 	"github.com/takechiyo-19940627/medicalquest/domain/repository"
@@ -11,6 +12,8 @@ import (
 type QuestionService struct {
 	questionRepository repository.QuestionRepository
 }
+
+var ERR_INVALID_CHOICE_ID = errors.New("invalid choice id")
 
 func NewQuestionService(questionRepository repository.QuestionRepository) *QuestionService {
 	return &QuestionService{
@@ -57,4 +60,25 @@ func (s *QuestionService) FindByID(ctx context.Context, id string) (dto.Question
 
 func (s *QuestionService) Create() error {
 	return nil
+}
+
+func (s *QuestionService) Submit(ctx context.Context, request dto.AnswerRequest) (dto.AnswerResult, error) {
+	q, err := s.questionRepository.FindByID(ctx, entity.ToUID(request.QuestionID))
+	if err != nil {
+		return dto.AnswerResult{}, err
+	}
+
+	selectedUID := entity.ToUID(request.QuestionID)
+	if hasChoice := q.HasChoice(selectedUID); !hasChoice {
+		return dto.AnswerResult{}, ERR_INVALID_CHOICE_ID
+	}
+
+	answer, err := entity.NewAnswer(q, selectedUID)
+	if err != nil {
+		return dto.AnswerResult{}, err
+	}
+
+	return dto.AnswerResult{
+		IsCorrect: answer.IsCorrect(),
+	}, nil
 }
