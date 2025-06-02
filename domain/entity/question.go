@@ -34,6 +34,13 @@ func NewQuestion(referenceCode, title, content string, choices []Choice) (Questi
 	}, nil
 }
 
+func (q Question) HasChoice(choiceID UID) bool {
+	match := lo.Filter(q.Choices, func(c Choice, _ int) bool {
+		return c.UID.IsEqual(choiceID)
+	})
+	return len(match) > 0
+}
+
 func validate(choices []Choice) error {
 	if len(choices) == 0 {
 		return ERR_NO_CHOICE
