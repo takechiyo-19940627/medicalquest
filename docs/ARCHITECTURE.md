@@ -93,7 +93,140 @@ medicalquest/
 5. `infrastructure/persistence` - リポジトリインターフェースの実装
 6. `infrastructure/ent` - Entによるデータベースアクセス
 
-## 実装詳細
+## エラーハンドリングについて
+### 設計思想
+- MedicalQuestでは、Go 1.13以降の標準的なエラーハンドリング機能（errors.Is/errors.As）を活用し、各レイヤーの責務を明確に分離したエラーハンドリングを実装します。 
+- プロジェクトの規模が小さいため、センチネルエラーを中心にハンドリングします
+- プロジェクトのコードベースが大きくなった場合は検討をし直す
+
+
+### 基本原則
+1. レイヤーの独立性: 各レイヤーは自身より下位のレイヤーのエラーの詳細を知らない
+2. エラーの変換: レイヤーの境界でエラーを適切に変換する
+3. 情報の隠蔽: 上位レイヤーには必要最小限の情報のみを伝える
+4. デバッグ容易性: ログには詳細な情報を記録する
+
+### エラーハンドリングのフロー
+```
+Domain Layer (センチネルエラー)
+    ↓
+Repository Layer (ドメインエラーを返す or ラップ)
+    ↓
+Service Layer (ServiceErrorに変換)
+    ↓
+Handler Layer (HTTPステータスコードに変換)
+    ↓
+Client (適切なエラーレスポンス)
+```
+
+### 実装方針
+1. ドメイン層
+```
+// domain/errors/errors.go
+package errors
+
+import "errors"
+
+// ドメイン層のセンチネルエラー
+var (
+    ErrNoChoiceUID               = errors.New("choice UID is required")
+    ErrMaxChoiceCount            = errors.New("choice count exceeds maximum limit")
+    ErrNoChoice                  = errors.New("at least one choice is required")
+    ErrInvalidCorrectChoiceCount = errors.New("exactly one correct choice is required")
+    ErrQuestionNotFound          = errors.New("question not found")
+    ErrChoiceNotFound            = errors.New("choice not found")
+)
+```
+
+2. リポジトリ層
+```
+// infrastructure/persistence/question.go
+func (q QuestionRepository) FindByID(ctx context.Context, id entity.UID) (entity.Question, error) {
+    qs, err := q.db.Question.
+        Query().
+        Where(question.UID(id.String())).
+        WithChoices().
+        First(ctx)
+    if err != nil {
+        if ent.IsNotFound(err) {
+            // シンプルにドメインエラーを返す
+            return entity.Question{}, domainErrors.ErrQuestionNotFound
+        }
+        // データベースエラーはラップして返す
+        return entity.Question{}, fmt.Errorf("failed to find question: %w", err)
+    }
+    // ... 正常処理
+}
+```
+
+3. サービス層
+
+```
+// service/errors/types.go
+package errors
+
+type ErrorType string
+
+const (
+    TypeNotFound   ErrorType = "not_found"
+    TypeValidation ErrorType = "validation"
+    TypeConflict   ErrorType = "conflict"
+    TypeInternal   ErrorType = "internal"
+)
+
+type ServiceError struct {
+    Type    ErrorType
+    Message string
+    Field   string // バリデーションエラーの場合のフィールド名
+    cause   error  // 元のエラー（外部に公開しない）
+}
+
+func (e *ServiceError) Error() string {
+    return e.Message
+}
+
+func (e *ServiceError) Unwrap() error {
+    return e.cause
+}
+```
+
+4. ハンドラー層
+
+```
+// handler/question_handler.go
+func (h *QuestionHandler) handleServiceError(c echo.Context, err error) error {
+    var svcErr *serviceErrors.ServiceError
+    if !errors.As(err, &svcErr) {
+        // ServiceError以外のエラーは内部エラーとして扱う
+        c.Logger().Errorf("Unexpected error type: %v", err)
+        return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
+    }
+
+    // エラーの詳細をログに記録
+    c.Logger().Errorf("Service error: type=%s, message=%s, cause=%v", 
+        svcErr.Type, svcErr.Message, svcErr.Unwrap())
+
+    // エラータイプに応じてHTTPステータスコードを決定
+    switch svcErr.Type {
+    case serviceErrors.TypeNotFound:
+        return echo.NewHTTPError(http.StatusNotFound, svcErr.Message)
+    
+    case serviceErrors.TypeValidation:
+        return c.JSON(http.StatusBadRequest, map[string]interface{}{
+            "error": "validation_error",
+            "field": svcErr.Field,
+            "message": svcErr.Message,
+        })
+    
+    case serviceErrors.TypeInternal:
+        // 内部エラーの詳細はクライアントに露出しない
+        return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
+    
+    default:
+        return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
+    }
+}
+```
 
 ### APIサーバー (cmd/api)
 
