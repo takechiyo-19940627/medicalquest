@@ -17,3 +17,7 @@ type ChoiceResult struct {
 	Content   string
 	IsCorrect bool
 }
+
+type AnswerResult struct {
+	IsCorrect bool
+}
