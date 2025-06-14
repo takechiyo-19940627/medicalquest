@@ -135,3 +135,37 @@ docker-compose run cli
 # ローカルで実行
 go run cmd/cli/main.go
 ```
+
+## CI/CD
+
+### GitHub Actions
+
+Pull Requestに対して以下の自動チェックが実行されます：
+
+#### 実行されるジョブ
+
+1. **Repository Tests**
+  - `infrastructure/persistence` パッケージのテストを実行
+  - カバレッジレポートの生成
+  - テスト結果のアーティファクトアップロード
+
+2. **Lint**
+  - `go vet` によるコード検証
+  - `golangci-lint` による静的解析
+
+3. **Build**
+  - APIとCLIのビルド確認
+
+#### ローカルでのテスト実行
+
+CIと同じテストをローカルで実行する場合：
+
+```bash
+# Entコードの生成
+go generate ./infrastructure/ent
+
+# Repositoryテストの実行
+go test -v -race -coverprofile=coverage.out ./infrastructure/persistence/...
+
+# カバレッジレポートの確認
+go tool cover -html=coverage.out
