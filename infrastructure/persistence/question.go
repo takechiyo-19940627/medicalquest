@@ -2,9 +2,11 @@ package persistence
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/samber/lo"
 	"github.com/takechiyo-19940627/medicalquest/domain/entity"
+	domainErrors "github.com/takechiyo-19940627/medicalquest/domain/errors"
 	"github.com/takechiyo-19940627/medicalquest/domain/repository"
 	"github.com/takechiyo-19940627/medicalquest/infrastructure/ent"
 	"github.com/takechiyo-19940627/medicalquest/infrastructure/ent/question"
@@ -52,7 +54,12 @@ func (q QuestionRepository) FindByID(ctx context.Context, id entity.UID) (entity
 		WithChoices().
 		First(ctx)
 	if err != nil {
-		return entity.Question{}, err
+		if ent.IsNotFound(err) {
+			// NotFoundの場合はドメインエラーを返す
+			return entity.Question{}, domainErrors.ErrQuestionNotFound
+		}
+		// その他のデータベースエラーはラップして返す
+		return entity.Question{}, fmt.Errorf("failed to find question: %w", err)
 	}
 
 	choices := make([]entity.Choice, len(qs.Edges.Choices))
