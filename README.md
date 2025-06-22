@@ -119,22 +119,94 @@ API サーバーは以下のエンドポイントを提供します：
 
 ## CLIアプリケーション
 
-CLI アプリケーションは以下の機能を提供します：
+CLI アプリケーションは API サーバーと連携して以下の機能を提供します：
 
-- 問題の出題
-- 回答の受付
-- 結果の表示
-- 結果のCSVファイル出力
+### 機能
 
-実行方法:
+- 問題一覧の表示
+- 特定問題の詳細表示
+- APIサーバーとの連携
+
+### 使用方法
+
+#### ビルド
 
 ```bash
-# Docker内で実行
-docker-compose run cli
-
-# ローカルで実行
-go run cmd/cli/main.go
+# バイナリのビルド
+go build -o medicalquest-cli cmd/cli/main.go
 ```
+
+#### 基本コマンド
+
+```bash
+# ヘルプの表示
+./medicalquest-cli --help
+
+# API URLを指定（デフォルト: http://localhost:8080）
+./medicalquest-cli --api-url http://localhost:8080 [command]
+```
+
+#### 利用可能なコマンド
+
+##### 問題一覧の表示
+
+```bash
+# 全ての問題一覧を表示
+./medicalquest-cli list
+
+# API URLを指定して実行
+./medicalquest-cli --api-url http://localhost:8080 list
+```
+
+実行例:
+```
+問題一覧:
+ID: abcd-1234-efgh-5678
+参照コード: REF001
+タイトル: 心臓の解剖学
+内容: 心臓の弁は全部で何枚ありますか？
+
+ID: ijkl-9012-mnop-3456
+参照コード: REF002
+タイトル: 血液循環
+内容: 大動脈から出た血液が心臓に戻るまでの経路は？
+```
+
+##### 特定問題の詳細表示
+
+```bash
+# 問題IDを指定して詳細を表示
+./medicalquest-cli get <問題ID>
+
+# 例
+./medicalquest-cli get abcd-1234-efgh-5678
+```
+
+実行例:
+```
+問題詳細:
+ID: abcd-1234-efgh-5678
+参照コード: REF001
+タイトル: 心臓の解剖学
+内容: 心臓の弁は全部で何枚ありますか？
+```
+
+#### Docker での実行
+
+```bash
+# Docker内でビルド・実行
+docker-compose run cli go build -o medicalquest-cli cmd/cli/main.go
+docker-compose run cli ./medicalquest-cli list
+
+# または直接実行
+docker-compose run cli go run cmd/cli/main.go list
+```
+
+#### 注意事項
+
+- CLIを使用する前にAPIサーバーが起動している必要があります
+- デフォルトのAPI URLは `http://localhost:8080` です
+- APIサーバーが異なるポートで動作している場合は `--api-url` フラグで指定してください
 
 ## CI/CD
 

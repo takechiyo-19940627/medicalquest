@@ -74,7 +74,7 @@ func (s *QuestionService) Submit(ctx context.Context, request dto.AnswerRequest)
 		return dto.AnswerResult{}, serviceErrors.NewInternalError("問題の取得に失敗しました", err)
 	}
 
-	selectedUID := entity.ToUID(request.QuestionID)
+	selectedUID := entity.ToUID(request.SelectedChoiceID)
 	if hasChoice := q.HasChoice(selectedUID); !hasChoice {
 		return dto.AnswerResult{}, serviceErrors.NewValidationError("無効な選択肢IDです", "selectedChoiceId", nil)
 	}
